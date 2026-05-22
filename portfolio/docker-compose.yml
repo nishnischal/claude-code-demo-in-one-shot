@@ -1,0 +1,12 @@
+services:
+  portfolio:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: portfolio
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+# Phase 2: uncomment the services below when ready to add backend + database
+# See docker-compose.phase2.yml for the full Phase 2 configuration

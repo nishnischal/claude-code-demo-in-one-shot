@@ -1,0 +1,47 @@
+# Phase 2 — Backend + Database
+#
+# To activate:
+#   1. Complete backend/ and database/ scaffolding
+#   2. Merge this file with docker-compose.yml:
+#      docker compose -f docker-compose.yml -f docker-compose.phase2.yml up --build
+#   3. Or copy these services into docker-compose.yml
+
+services:
+  portfolio:
+    # Override: nginx now also proxies /api to backend
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: portfolio-backend
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/portfolio
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: portfolio-db
+    environment:
+      POSTGRES_DB: portfolio
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

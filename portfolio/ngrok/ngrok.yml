@@ -1,0 +1,9 @@
+version: "3"
+# Set authtoken once via: ngrok config add-authtoken <your-token>
+
+tunnels:
+  portfolio:
+    addr: localhost:8080
+    proto: http
+    # Uncomment to set a custom domain (requires paid ngrok plan):
+    # hostname: your-domain.ngrok.app
