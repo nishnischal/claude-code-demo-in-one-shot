@@ -1,0 +1,90 @@
+:root {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --border: #334155;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+#root {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--accent); }
+
+.search-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 0.6rem 0.875rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.search-bar input::placeholder { color: var(--muted); }
+.search-bar input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.search-bar button {
+  padding: 0.6rem 1.25rem;
+  background: var(--accent);
+  color: #0f172a;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.current-weather {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.current-weather .city { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.25rem; }
+.current-weather .condition { color: var(--muted); margin-bottom: 1rem; }
+.current-weather .temp { font-size: 3.5rem; font-weight: 700; line-height: 1; }
+.current-weather .meta { color: var(--muted); margin-top: 0.75rem; font-size: 0.875rem; }
+
+.forecast { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.forecast-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+}
+
+.forecast-row .day { width: 80px; font-weight: 500; }
+.forecast-row .icon { font-size: 1.5rem; }
+.forecast-row .temps { text-align: right; }
+.forecast-row .high { font-weight: 600; }
+.forecast-row .low { color: var(--muted); font-size: 0.875rem; }
+
+.error { color: #f87171; padding: 1rem 0; }
+.loading { color: var(--muted); padding: 1rem 0; }
