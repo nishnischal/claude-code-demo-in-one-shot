@@ -81,6 +81,7 @@ export function UrlShortener() {
         setUrl('')
         setCustomSlug('')
         setExpiresAt('')
+        fetchStats(data.slug)
       }
     } catch {
       setError('Network error — please try again')
@@ -96,14 +97,14 @@ export function UrlShortener() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  async function handleStats(e: React.FormEvent) {
-    e.preventDefault()
+  async function fetchStats(slug: string) {
     setStatsError(null)
     setStats(null)
     setStatsLoading(true)
+    setStatsSlug(slug)
 
     try {
-      const res = await fetch(`/api/stats/${encodeURIComponent(statsSlug)}`)
+      const res = await fetch(`/api/stats/${encodeURIComponent(slug)}`)
       const data = await res.json()
       if (!res.ok) {
         setStatsError(data.error ?? 'Not found')
@@ -115,6 +116,11 @@ export function UrlShortener() {
     } finally {
       setStatsLoading(false)
     }
+  }
+
+  async function handleStats(e: React.FormEvent) {
+    e.preventDefault()
+    fetchStats(statsSlug)
   }
 
   return (
