@@ -1,36 +1,118 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# URL Shortener
 
-## Getting Started
+A full-stack URL shortener built with **Next.js 15 (App Router)**, **PostgreSQL**, **Prisma**, and **Temporal** for background workflow processing. Paste a long URL, get a short slug, and track click analytics — all running locally via Docker Compose.
 
-First, run the development server:
+## Features
+
+- Shorten any URL to a memorable slug (auto-generated with `nanoid` or custom)
+- Optional link expiry
+- Click tracking with referrer and user-agent logging
+- Background analytics processing via [Temporal](https://temporal.io/) workflows
+- Temporal UI dashboard at `http://localhost:8080`
+
+## Tech stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router, React 19) |
+| Styling | Tailwind CSS v4, shadcn/ui components |
+| Database | PostgreSQL 16 (via Docker) |
+| ORM | Prisma 7 |
+| Background jobs | Temporal (worker + workflows) |
+| Validation | Zod |
+
+## Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) and Docker Compose
+- Node.js 20+
+- npm
+
+## Local setup
+
+### 1. Start infrastructure
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd url-shortener
+docker compose up -d
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This starts:
+- **PostgreSQL** on port `5432`
+- **Temporal server** on port `7233`
+- **Temporal UI** on port `8080`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 2. Install dependencies
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+```
 
-## Learn More
+`postinstall` runs `prisma generate` automatically.
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Configure environment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Create a `.env` file in the `url-shortener/` directory:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/urlshortener"
+TEMPORAL_ADDRESS="localhost:7233"
+```
 
-## Deploy on Vercel
+### 4. Run database migrations
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run db:migrate
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 5. Start the Temporal worker
+
+In a separate terminal:
+
+```bash
+npm run worker
+```
+
+### 6. Start the Next.js dev server
+
+```bash
+npm run dev   # → http://localhost:3000
+```
+
+## Available scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start Next.js in development mode |
+| `npm run build` | Production build |
+| `npm run start` | Start production server |
+| `npm run worker` | Start Temporal worker process |
+| `npm run db:migrate` | Run Prisma migrations |
+| `npm run db:generate` | Regenerate Prisma client |
+| `npm run db:studio` | Open Prisma Studio at `http://localhost:5555` |
+
+## Data model
+
+```
+Url
+├── id         — CUID primary key
+├── slug       — unique short code
+├── longUrl    — the original long URL
+├── clicks     — running click counter
+├── createdAt
+├── expiresAt  — optional expiry timestamp
+└── clickLogs  → ClickLog[]
+
+ClickLog
+├── id
+├── urlId      → Url
+├── clickedAt
+├── referrer
+└── userAgent
+```
+
+## Stopping
+
+```bash
+docker compose down          # stop containers, keep data
+docker compose down -v       # stop and delete all data
+```

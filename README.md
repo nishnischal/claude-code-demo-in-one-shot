@@ -9,6 +9,7 @@ A collection of demo projects built in a single session using [Claude Code](http
 | [portfolio/](./portfolio/) | React + Vite, Docker, Nginx | Personal portfolio site — Phase 1 (static) with Phase 2 (backend) planned |
 | [projects/todo-app/](./projects/todo-app/) | React, Node.js/Express, SQLite | Full-stack Todo app with REST API |
 | [projects/weather-dashboard/](./projects/weather-dashboard/) | React + Vite, Open-Meteo API | Live weather dashboard using a free public API |
+| [url-shortener/](./url-shortener/) | Next.js 16, PostgreSQL, Prisma, Temporal | Full-stack URL shortener with click analytics and background workflows |
 
 ## Running a project locally
 
@@ -44,14 +45,28 @@ npm install
 npm run dev           # → http://localhost:5173
 ```
 
+### url-shortener
+
+```bash
+cd url-shortener
+docker compose up -d          # starts PostgreSQL, Temporal, Temporal UI
+npm install
+cp .env.example .env          # or create .env manually (see url-shortener/README.md)
+npm run db:migrate
+npm run worker &              # Temporal worker in background
+npm run dev                   # → http://localhost:3000
+```
+
 ## Tech stack overview
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React 18, Vite |
-| Styling | Plain CSS (custom design tokens) |
+| Frontend | React 18/19, Vite, Next.js 16 (App Router) |
+| Styling | Plain CSS, Tailwind CSS v4, shadcn/ui |
 | Backend | Node.js 20, Express.js |
-| Database | SQLite (via `better-sqlite3`) |
+| Database | SQLite (via `better-sqlite3`), PostgreSQL 16 |
+| ORM | Prisma 7 |
+| Background jobs | Temporal (workflows + workers) |
 | Containers | Docker, Docker Compose |
 | Web server | Nginx |
 | External APIs | GitHub REST API, Open-Meteo (free, no key) |
